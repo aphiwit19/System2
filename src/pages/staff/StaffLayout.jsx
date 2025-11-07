@@ -18,7 +18,13 @@ const StaffLayout = () => {
         boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px'
+        gap: '10px',
+        position: 'sticky',
+        top: 0,
+        alignSelf: 'flex-start',
+        height: '100vh',
+        overflowY: 'auto',
+        flexShrink: 0
       }}>
         <h2 style={{ marginBottom: '30px', color: '#333' }}>Staff Panel</h2>
         <Link
@@ -51,28 +57,27 @@ const StaffLayout = () => {
         >
           คำสั่งเบิก
         </Link>
-        {/* Added Logout Button */}
-        <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
-          <button
-            onClick={() => signOut(auth)}
-            style={{
-              width: '100%',
-              padding: '12px',
-              borderRadius: '8px',
-              backgroundColor: '#f44336',
-              color: 'white',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
-          >
-            Logout
-          </button>
-        </div>
+        <Link
+          to="/staff/orders"
+          style={{
+            marginTop: 8,
+            padding: '12px 16px',
+            borderRadius: '8px',
+            backgroundColor: location.pathname === '/staff/orders' ? '#e0e0e0' : '#f0f0f0',
+            color: '#333',
+            textDecoration: 'none',
+            display: 'block',
+            fontWeight: 'bold'
+          }}
+        >
+          ติดตามสถานะ
+        </Link>
+
+        {/* logout moved to header snackbar */}
       </div>
 
       {/* Main Content */}
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, height: '100vh', overflowY: 'auto' }}>
         <Outlet />
       </div>
     </div>

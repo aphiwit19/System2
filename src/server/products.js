@@ -15,7 +15,7 @@ import { db } from '../firebase';
 export async function addProduct(productData) {
   try {
     // ใช้ราคาทุนเป็นราคาขายด้วย (ราคาเดียว)
-    const costPrice = parseFloat(productData.costPrice);
+    const costPrice = parseFloat(productData.costPrice);     
     
     // แปลงข้อมูลให้เหมาะสมกับ Firestore
     const data = {
@@ -184,7 +184,13 @@ export async function createWithdrawal(payload) {
       receivedBy: payload.receivedBy || null,
       withdrawDate: Timestamp.fromDate(new Date(payload.withdrawDate || new Date())),
       total: parseFloat(payload.total || 0),
-      createdAt: Timestamp.now()
+      // shipping fields
+      shippingCarrier: payload.shippingCarrier || null,
+      trackingNumber: payload.trackingNumber || '',
+      shippingStatus: payload.shippingStatus || 'รอดำเนินการ',
+      createdAt: Timestamp.now(),
+      createdByUid: payload.createdByUid || null,
+      createdByEmail: payload.createdByEmail || null
     };
 
     // สร้างเอกสารการเบิก
@@ -204,6 +210,57 @@ export async function createWithdrawal(payload) {
     return ref.id;
   } catch (error) {
     console.error('Error creating withdrawal:', error);
+    throw error;
+  }
+}
+
+/**
+ * ดึงรายการคำสั่งเบิกทั้งหมดสำหรับแอดมิน (ใช้เป็นออเดอร์)
+ */
+export async function getAllWithdrawals() {
+  try {
+    const q = query(collection(db, 'withdrawals'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (error) {
+    console.error('Error getting withdrawals:', error);
+    throw error;
+  }
+}
+
+/**
+ * ดึงรายการคำสั่งเบิกของผู้ใช้ตาม UID
+ * @param {string} uid
+ */
+export async function getWithdrawalsByUser(uid) {
+  try {
+    const qRef = query(collection(db, 'withdrawals'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(qRef);
+    return snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(w => (w.createdByUid || null) === uid);
+  } catch (error) {
+    console.error('Error getting user withdrawals:', error);
+    throw error;
+  }
+}
+
+/**
+ * อัปเดตข้อมูลการจัดส่งของคำสั่งเบิก
+ * @param {string} withdrawalId
+ * @param {{shippingCarrier?: string, trackingNumber?: string, shippingStatus?: string}} updates
+ */
+export async function updateWithdrawalShipping(withdrawalId, updates) {
+  try {
+    const ref = doc(db, 'withdrawals', withdrawalId);
+    await updateDoc(ref, {
+      ...(updates.shippingCarrier !== undefined ? { shippingCarrier: updates.shippingCarrier } : {}),
+      ...(updates.trackingNumber !== undefined ? { trackingNumber: updates.trackingNumber } : {}),
+      ...(updates.shippingStatus !== undefined ? { shippingStatus: updates.shippingStatus } : {}),
+      updatedAt: Timestamp.now()
+    });
+  } catch (error) {
+    console.error('Error updating withdrawal shipping:', error);
     throw error;
   }
 }

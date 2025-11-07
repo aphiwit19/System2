@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createWithdrawal, getAllProducts } from '../../server/products';
+import { useAuth } from '../../auth/AuthContext';
 
 function readCart() {
   try {
@@ -17,6 +18,8 @@ function writeCart(items) {
 
 export default function WithdrawPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
   const [productsById, setProductsById] = useState({});
   const [items, setItems] = useState(readCart());
   const [requestedBy, setRequestedBy] = useState('');
@@ -63,6 +66,8 @@ export default function WithdrawPage() {
         receivedBy: receivedBy.trim(),
         withdrawDate,
         total,
+        createdByUid: user?.uid || null,
+        createdByEmail: user?.email || null,
       });
       writeCart([]);
       alert('บันทึกคำสั่งเบิกสำเร็จ');

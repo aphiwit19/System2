@@ -70,6 +70,8 @@ export default function CustomerWithdrawPage() {
         receivedBy: receivedBy.trim(),
         withdrawDate,
         total,
+        createdByUid: user?.uid || null,
+        createdByEmail: user?.email || null
       });
       localStorage.setItem(cartKey(user?.uid), JSON.stringify([]));
       alert('บันทึกคำสั่งเบิกสำเร็จ');
@@ -84,7 +86,7 @@ export default function CustomerWithdrawPage() {
   return (
     <div style={{ padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ margin: 0 }}>คำสั่งเบิก</h2>
+        <h2 style={{ margin: 0 }}>คำสั่งซื้อ</h2>
         <Link to="/customer" style={{ color: '#667eea', textDecoration: 'none' }}>← กลับไปเลือกสินค้า</Link>
       </div>
 
@@ -113,10 +115,10 @@ export default function CustomerWithdrawPage() {
         </div>
 
         <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 4px rgba(0,0,0,0.08)', padding: 16 }}>
-          <h3 style={{ marginTop: 0 }}>รายละเอียดผู้เบิก</h3>
+          <h3 style={{ marginTop: 0 }}>รายละเอียดผู้สั่งซื้อ</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>ผู้เบิก</div>
+              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>ผู้สั่งซื้อ</div>
               <input value={requestedBy} onChange={(e)=>setRequestedBy(e.target.value)} style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: 8 }} />
             </div>
             <div>
@@ -124,7 +126,7 @@ export default function CustomerWithdrawPage() {
               <input value={receivedBy} onChange={(e)=>setReceivedBy(e.target.value)} style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: 8 }} />
             </div>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>วันที่เบิก</div>
+              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>วันที่สั่งซื้อ</div>
               <input type="date" value={withdrawDate} onChange={(e)=>setWithdrawDate(e.target.value)} style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: 8 }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
@@ -132,7 +134,7 @@ export default function CustomerWithdrawPage() {
               <strong>฿{total.toLocaleString()}</strong>
             </div>
             <button disabled={submitting || items.length===0} onClick={submit} style={{ padding: '12px', background: submitting || items.length===0 ? '#ccc' : '#4CAF50', color: '#fff', border: 'none', borderRadius: 8, cursor: submitting || items.length===0 ? 'not-allowed' : 'pointer', fontWeight: 600 }}>
-              {submitting ? 'กำลังบันทึก...' : 'บันทึกคำสั่งเบิก'}
+              {submitting ? 'กำลังบันทึก...' : 'บันทึกคำสั่งซื้อ'}
             </button>
           </div>
         </div>

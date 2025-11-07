@@ -27,11 +27,13 @@ const AdminLayout = () => {
         boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px',
+        gap: '15px',
         position: 'sticky',
         top: 0,
+        alignSelf: 'flex-start',
         height: '100vh',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        flexShrink: 0
       }}>
         <h2 style={{ marginBottom: '30px', color: '#333' }}>Admin Panel</h2>
         <Link
@@ -55,7 +57,30 @@ const AdminLayout = () => {
             borderRadius: '50%',
             backgroundColor: isActiveLink('/admin/dashboard') ? 'white' : '#888'
           }} />
-          <span>Products</span>
+          <span>รายการสินค้า</span>
+        </Link>
+        <Link
+          to="/admin/orders"
+          style={{
+            padding: '12px 16px',
+            borderRadius: '8px',
+            backgroundColor: isActiveLink('/admin/orders') ? '#4CAF50' : '#f0f0f0',
+            color: isActiveLink('/admin/orders') ? 'white' : '#333',
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            fontWeight: isActiveLink('/admin/orders') ? 'bold' : 'normal'
+          }}
+        >
+          <span style={{
+            display: 'inline-block',
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            backgroundColor: isActiveLink('/admin/orders') ? 'white' : '#888'
+          }} />
+          <span>รายการคำสั่งซื้อ / เบิก</span>
         </Link>
         <Link
           to="/admin/users"
@@ -78,7 +103,7 @@ const AdminLayout = () => {
             borderRadius: '50%',
             backgroundColor: isActiveLink('/admin/users') ? 'white' : '#888'
           }} />
-          <span>Manage User</span>
+          <span>จัดการสิทธิ์ผู้ใช้</span>
         </Link>
         <Link
           to="/admin/addproduct"
@@ -101,30 +126,13 @@ const AdminLayout = () => {
             borderRadius: '50%',
             backgroundColor: isActiveLink('/admin/addproduct') ? 'white' : '#888'
           }} />
-          <span>Add Product</span>
+          <span>เพิ่มสินค้าใหม่</span>
         </Link>
-        {/* Updated Logout Button */}
-        <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
-          <button
-            onClick={() => signOut(auth)}
-            style={{
-              width: '100%',
-              padding: '12px',
-              borderRadius: '8px',
-              backgroundColor: '#f44336',
-              color: 'white',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
-          >
-            Logout
-          </button>
-        </div>
+        {/* moved logout to profile menu */}
       </div>
 
       {/* Main Content */}
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, height: '100vh', overflowY: 'auto' }}>
         <Outlet />
       </div>
     </div>

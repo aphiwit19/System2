@@ -20,6 +20,9 @@ export default function ProductsPage() {
   const [quantityChange, setQuantityChange] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
+  const [detailProduct, setDetailProduct] = useState(null);
+  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -135,7 +138,7 @@ export default function ProductsPage() {
         <div>
           <h1 style={{ margin: 0, color: '#333' }}>All Products</h1>
         </div>
-        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '15px', alignItems: 'center', position: 'relative' }}>
           <div style={{ position: 'relative' }}>
             <input
               type="text"
@@ -160,20 +163,40 @@ export default function ProductsPage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ color: '#666' }}>{profile?.displayName || user?.email || 'Admin'}</span>
-            <div style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#4CAF50',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontWeight: 'bold'
-            }}>
+            <div
+              onClick={() => setShowMenu(v => !v)}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                backgroundColor: '#4CAF50',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+              }}
+              title={profile?.displayName || 'Admin'}
+              role="button"
+              aria-label="profile-menu"
+              tabIndex={0}
+            >
               {(profile?.displayName || user?.email || 'A')[0].toUpperCase()}
             </div>
           </div>
+          {showMenu && (
+            <div style={{ position:'absolute', right: 0, top: 'calc(100% + 8px)', background:'#323232', color:'#fff', borderRadius:8, padding:'10px 12px', minWidth:160, boxShadow:'0 4px 10px rgba(0,0,0,0.25)', zIndex: 3000 }}>
+              <div style={{ paddingBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.15)', marginBottom: 8 }}>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>{profile?.displayName || user?.email || 'Admin'}</div>
+              </div>
+              <button
+                onClick={() => signOut(auth)}
+                style={{ width: '100%', padding: '8px 10px', borderRadius: 6, background: '#f44336', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 13 }}
+              >ออกจากระบบ</button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -192,7 +215,7 @@ export default function ProductsPage() {
         <>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(4, 1fr)',
             gap: '20px',
             marginBottom: '30px'
           }}>
@@ -209,6 +232,7 @@ export default function ProductsPage() {
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                onClick={() => { setDetailProduct(product); setShowDetail(true); }}
               >
                 <div style={{
                   width: '100%',
@@ -303,6 +327,7 @@ export default function ProductsPage() {
                         borderRadius: '4px',
                         fontSize: '12px'
                       }}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       แก้ไข
                     </Link>
@@ -346,6 +371,35 @@ export default function ProductsPage() {
               </div>
             ))}
           </div>
+
+          {/* Product Detail Modal */}
+          {showDetail && detailProduct && (
+            <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2100, padding: 20 }} onClick={() => setShowDetail(false)}>
+              <div style={{ background: '#fff', borderRadius: 12, width: 700, maxWidth: '100%', padding: 20, display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 16 }} onClick={(e)=>e.stopPropagation()}>
+                <div style={{ width: '100%', height: 320, background:'#f0f0f0', borderRadius: 8, overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  {detailProduct.image ? (
+                    <img src={detailProduct.image} alt={detailProduct.productName} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                  ) : (
+                    <span style={{ color:'#999' }}>No Image</span>
+                  )}
+                </div>
+                <div>
+                  <h2 style={{ marginTop: 0 }}>{detailProduct.productName || 'Unnamed Product'}</h2>
+                  <p style={{ color:'#666', whiteSpace:'pre-wrap' }}>{detailProduct.description || 'ไม่มีคำอธิบาย'}</p>
+                  <div style={{ background:'#e8f5e9', color:'#2e7d32', padding:'8px 12px', borderRadius:6, fontWeight:500, marginTop:8 }}>จำนวนคงเหลือ: {detailProduct.quantity || 0} ชิ้น</div>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop: 12 }}>
+                    <span style={{ fontSize:22, fontWeight:'bold', color:'#4CAF50' }}>฿{(detailProduct.price ?? detailProduct.costPrice ?? 0).toLocaleString()}</span>
+                    <div style={{ display:'flex', gap: 8 }}>
+                      <Link to={`/admin/products/${detailProduct.id}/edit`} onClick={() => setShowDetail(false)} style={{ padding:'8px 14px', background:'#2196F3', color:'#fff', borderRadius:6, textDecoration:'none' }}>แก้ไข</Link>
+                      <button onClick={() => { setShowDetail(false); handleOpenQuantityModal(detailProduct); }} style={{ padding:'8px 14px', background:'#FF9800', color:'#fff', border:'none', borderRadius:6, cursor:'pointer' }}>+/-</button>
+                      <button onClick={() => { setShowDetail(false); handleDeleteProduct(detailProduct.id, detailProduct.productName); }} disabled={isDeleting} style={{ padding:'8px 14px', background: isDeleting ? '#ccc' : '#f44336', color:'#fff', border:'none', borderRadius:6, cursor: isDeleting ? 'not-allowed' : 'pointer' }}>ลบ</button>
+                      <button onClick={() => setShowDetail(false)} style={{ padding:'8px 14px', background:'#6c757d', color:'#fff', border:'none', borderRadius:6, cursor:'pointer' }}>ปิด</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (
