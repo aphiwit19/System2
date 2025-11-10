@@ -43,21 +43,6 @@ const CustomerLayout = () => {
           รายการสินค้า
         </Link>
         <Link
-          to="/customer/orders"
-          style={{
-            marginTop: 8,
-            padding: '12px 16px',
-            borderRadius: '8px',
-            backgroundColor: location.pathname === '/customer/orders' ? '#e0e0e0' : '#f0f0f0',
-            color: '#333',
-            textDecoration: 'none',
-            display: 'block',
-            fontWeight: 'bold'
-          }}
-        >
-          ติดตามสถานะ
-        </Link>
-        <Link
           to="/customer/withdraw"
           style={{
             marginTop: 8,
@@ -71,6 +56,21 @@ const CustomerLayout = () => {
           }}
         >
           คำสั่งซื้อ
+        </Link>
+        <Link
+          to="/customer/orders"
+          style={{
+            marginTop: 8,
+            padding: '12px 16px',
+            borderRadius: '8px',
+            backgroundColor: location.pathname === '/customer/orders' ? '#e0e0e0' : '#f0f0f0',
+            color: '#333',
+            textDecoration: 'none',
+            display: 'block',
+            fontWeight: 'bold'
+          }}
+        >
+          ติดตามสถานะ
         </Link>
         {/* logout moved to header snackbar */}
       </div>
