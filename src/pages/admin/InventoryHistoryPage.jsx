@@ -75,18 +75,6 @@ export default function InventoryHistoryPage() {
     <div style={{ padding: '20px' }}>
       {/* Header */}
       <div style={{ marginBottom: '30px' }}>
-        <Link
-          to="/admin/dashboard"
-          style={{
-            color: '#667eea',
-            textDecoration: 'none',
-            fontSize: '14px',
-            display: 'inline-block',
-            marginBottom: '15px'
-          }}
-        >
-          ← กลับไปหน้ารายการสินค้า
-        </Link>
         <h1 style={{
           margin: '0 0 10px 0',
           fontSize: '28px',

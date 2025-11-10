@@ -62,13 +62,14 @@ export default function AdminOrdersPage() {
   const saveRow = async (id) => {
     if (!canSave(id)) return;
     const e = edits[id];
+    const order = orders.find(o => o.id === id);
     setSavingId(id);
     try {
       await updateWithdrawalShipping(id, {
         shippingCarrier: e.shippingCarrier,
         trackingNumber: e.trackingNumber.trim(),
         shippingStatus: e.shippingStatus,
-      });
+      }, order?.createdByUid);
       // optimistic update without reload
       setOrders(prev => prev.map(o => o.id === id ? { ...o, ...e } : o));
       setSavedOk(prev => ({ ...prev, [id]: true }));

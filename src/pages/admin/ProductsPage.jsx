@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
-import { getAllProducts, deleteProduct, updateProductQuantity } from '../../server/products';
+import { getAllProducts, deleteProduct, updateProductQuantity, getInventoryHistory } from '../../server/products';
 import { Link } from 'react-router-dom';
 
 export default function ProductsPage() {
@@ -23,6 +23,10 @@ export default function ProductsPage() {
   const [showDetail, setShowDetail] = useState(false);
   const [detailProduct, setDetailProduct] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
+  // inventory history modal states
+  const [showHistory, setShowHistory] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyRows, setHistoryRows] = useState([]);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -88,6 +92,18 @@ export default function ProductsPage() {
     setSelectedProduct(product);
     setQuantityChange('');
     setShowQuantityModal(true);
+  };
+
+  const openHistory = async (product) => {
+    setSelectedProduct(product);
+    setShowHistory(true);
+    setHistoryLoading(true);
+    try {
+      const rows = await getInventoryHistory(product.id);
+      setHistoryRows(rows);
+    } finally {
+      setHistoryLoading(false);
+    }
   };
 
   const handleUpdateQuantity = async () => {
@@ -346,7 +362,7 @@ export default function ProductsPage() {
                         fontSize: '12px'
                       }}
                     >
-                      +/-
+                      เพิ่ม
                     </button>
                     <button
                       onClick={(e) => {

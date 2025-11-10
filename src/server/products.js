@@ -1,4 +1,4 @@
-import { collection, addDoc, Timestamp, getDocs, query, orderBy, doc, getDoc, updateDoc, deleteDoc, runTransaction } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, getDocs, query, orderBy, doc, getDoc, updateDoc, deleteDoc, runTransaction, collectionGroup } from 'firebase/firestore';
 import { db } from '../firebase';
 
 /**
@@ -199,8 +199,11 @@ export async function createWithdrawal(payload) {
       createdSource: payload.createdSource || null
     };
 
-    const withdrawalsCol = collection(db, 'withdrawals');
-    const newWithdrawRef = doc(withdrawalsCol);
+    if (!withdrawDoc.createdByUid) {
+      throw new Error('ไม่พบ UID ของผู้สร้างคำสั่ง');
+    }
+    const userOrdersCol = collection(db, 'users', withdrawDoc.createdByUid, 'orders');
+    const newWithdrawRef = doc(userOrdersCol);
 
     // ใช้ธุรกรรมเพื่อ "จองสต๊อก" (เพิ่ม reserved) ตามจำนวนที่สั่ง หากสต๊อกพร้อมขายไม่พอจะ throw
     await runTransaction(db, async (tx) => {
@@ -220,7 +223,7 @@ export async function createWithdrawal(payload) {
         productStates.push({ pRef, qty, reserved, req });
       }
 
-      // PASS 2: เขียนอัปเดตสต๊อก และเอกสารคำสั่งซื้อ
+      // PASS 2: เขียนอัปเดตสต๊อก และเอกสารคำสั่งซื้อ (เฉพาะใน users/{uid}/orders)
       for (const s of productStates) {
         if (method === 'pickup') {
           const nextQty = Math.max(0, s.qty - s.req);
@@ -244,7 +247,8 @@ export async function createWithdrawal(payload) {
  */
 export async function getAllWithdrawals() {
   try {
-    const q = query(collection(db, 'withdrawals'), orderBy('createdAt', 'desc'));
+    // list all orders across users via collection group
+    const q = query(collectionGroup(db, 'orders'), orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch (error) {
@@ -259,11 +263,10 @@ export async function getAllWithdrawals() {
  */
 export async function getWithdrawalsByUser(uid) {
   try {
-    const qRef = query(collection(db, 'withdrawals'), orderBy('createdAt', 'desc'));
-    const snap = await getDocs(qRef);
-    return snap.docs
-      .map(d => ({ id: d.id, ...d.data() }))
-      .filter(w => (w.createdByUid || null) === uid);
+    const userOrdersRef = collection(db, 'users', uid, 'orders');
+    const qUser = query(userOrdersRef, orderBy('createdAt', 'desc'));
+    const subSnap = await getDocs(qUser);
+    return subSnap.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch (error) {
     console.error('Error getting user withdrawals:', error);
     throw error;
@@ -275,9 +278,10 @@ export async function getWithdrawalsByUser(uid) {
  * @param {string} withdrawalId
  * @param {{shippingCarrier?: string, trackingNumber?: string, shippingStatus?: string}} updates
  */
-export async function updateWithdrawalShipping(withdrawalId, updates) {
+export async function updateWithdrawalShipping(withdrawalId, updates, createdByUid) {
   try {
-    const ref = doc(db, 'withdrawals', withdrawalId);
+    if (!createdByUid) throw new Error('ต้องระบุ UID ของเจ้าของคำสั่งซื้อ');
+    const ref = doc(db, 'users', createdByUid, 'orders', withdrawalId);
     const curr = await getDoc(ref);
     if (!curr.exists()) throw new Error('ไม่พบคำสั่งซื้อ');
     const currentData = curr.data();
