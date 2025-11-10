@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createWithdrawal, getAllProducts } from '../../server/products';
+import { createWithdrawal, getAllProducts } from '../../services';
 import { useAuth } from '../../auth/AuthContext';
 
 export default function CustomerWithdrawPage() {

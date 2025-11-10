@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
-import { getAllProducts, deleteProduct, updateProductQuantity, getInventoryHistory } from '../../server/products';
+import { getAllProducts, deleteProduct, updateProductQuantity, getInventoryHistory, isLowStock } from '../../services';
 import { Link } from 'react-router-dom';
 
 export default function ProductsPage() {
@@ -27,6 +27,7 @@ export default function ProductsPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyRows, setHistoryRows] = useState([]);
+  const lowStock = filteredProducts.filter(p => isLowStock(p));
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -141,6 +142,7 @@ export default function ProductsPage() {
     // Removed the sidebar and adjusted the main content styling
     <div style={{ padding: '20px' }}>
       {/* Header */}
+      {/* Header */}
       <div style={{
         backgroundColor: '#fff',
         padding: '20px',
@@ -216,6 +218,13 @@ export default function ProductsPage() {
         </div>
       </div>
 
+      {/* Low stock banner */}
+      {lowStock.length > 0 && (
+        <div style={{ background:'#fff3e0', border: '1px solid #ffcc80', color:'#e65100', borderRadius:8, padding:12, marginBottom:16, boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+          <strong>แจ้งเตือนสต็อกต่ำ:</strong> พบ {lowStock.length} รายการที่ต่ำกว่า 20% ของสต็อกตั้งต้น
+        </div>
+      )}
+
       {/* Products Grid */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '40px' }}>
@@ -250,6 +259,11 @@ export default function ProductsPage() {
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 onClick={() => { setDetailProduct(product); setShowDetail(true); }}
               >
+                {isLowStock(product) && (
+                  <div style={{ position:'relative' }}>
+                    <div style={{ position:'absolute', top:-6, right:-6, background:'#ff7043', color:'#fff', padding:'4px 8px', borderRadius:6, fontSize:11, fontWeight:700 }}>LOW STOCK</div>
+                  </div>
+                )}
                 <div style={{
                   width: '100%',
                   height: '200px',
@@ -295,6 +309,11 @@ export default function ProductsPage() {
                 }}>
                   {product.productName || 'Unnamed Product'}
                 </h3>
+                {product.purchaseLocation && (
+                  <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '6px' }}>
+                    แหล่งที่ซื้อ: {product.purchaseLocation}
+                  </div>
+                )}
                 <p style={{
                   margin: '0 0 10px 0',
                   fontSize: '12px',
@@ -401,6 +420,11 @@ export default function ProductsPage() {
                 </div>
                 <div>
                   <h2 style={{ marginTop: 0 }}>{detailProduct.productName || 'Unnamed Product'}</h2>
+                  {detailProduct.purchaseLocation && (
+                    <div style={{ fontSize: '13px', color: '#6b7280', margin: '4px 0 8px' }}>
+                      แหล่งที่ซื้อ: {detailProduct.purchaseLocation}
+                    </div>
+                  )}
                   <p style={{ color:'#666', whiteSpace:'pre-wrap' }}>{detailProduct.description || 'ไม่มีคำอธิบาย'}</p>
                   <div style={{ background:'#e8f5e9', color:'#2e7d32', padding:'8px 12px', borderRadius:6, fontWeight:500, marginTop:8 }}>จำนวนคงเหลือ: {detailProduct.quantity || 0} ชิ้น</div>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop: 12 }}>

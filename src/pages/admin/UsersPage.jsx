@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
-import { getAllUsers, updateUserRole } from '../../server/users';
+import { getAllUsers, updateUserRole } from '../../services';
 import { Link, useLocation } from 'react-router-dom';
 
 export default function UsersPage() {

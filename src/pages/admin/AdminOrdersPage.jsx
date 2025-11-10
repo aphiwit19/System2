@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAllWithdrawals, updateWithdrawalShipping } from '../../server/products';
+import { getAllWithdrawals, updateWithdrawalShipping } from '../../services';
 
 const carriers = ['EMS', 'ไปรษณีย์ไทย', 'Kerry', 'J&T', 'Flash'];
 const statuses = ['รอดำเนินการ', 'กำลังดำเนินการส่ง', 'ส่งสำเร็จ'];

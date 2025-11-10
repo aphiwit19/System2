@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { useAuth } from '../../auth/AuthContext';
-import { getAllProducts } from '../../server/products';
+import { getAllProducts } from '../../services';
 
 export default function CustomerDashboard() {
   const { user, profile } = useAuth();
@@ -238,6 +238,11 @@ export default function CustomerDashboard() {
                 }}>
                   {product.productName || 'Unnamed Product'}
                 </h3>
+                {product.purchaseLocation && (
+                  <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '6px' }}>
+                    แหล่งที่ซื้อ: {product.purchaseLocation}
+                  </div>
+                )}
                 <p style={{
                   margin: '0 0 10px 0',
                   fontSize: '12px',
@@ -368,6 +373,11 @@ export default function CustomerDashboard() {
             </div>
             <div>
               <h2 style={{ marginTop: 0 }}>{detailProduct.productName || 'Unnamed Product'}</h2>
+              {detailProduct.purchaseLocation && (
+                <div style={{ fontSize: '13px', color: '#6b7280', margin: '4px 0 8px' }}>
+                  แหล่งที่ซื้อ: {detailProduct.purchaseLocation}
+                </div>
+              )}
               <p style={{ color:'#666', whiteSpace:'pre-wrap' }}>{detailProduct.description || 'ไม่มีคำอธิบาย'}</p>
               <div style={{ background:'#e8f5e9', color:'#2e7d32', padding:'8px 12px', borderRadius:6, fontWeight:500, marginTop:8 }}>คงเหลือพร้อมขาย: {Math.max(0, (detailProduct.quantity || 0) - (detailProduct.reserved || 0))} ชิ้น</div>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:12 }}>

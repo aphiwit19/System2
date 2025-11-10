@@ -3,7 +3,8 @@ import { useAuth } from '../../auth/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { addProduct } from '../../server/products';
+import { addProduct } from '../../services';
+
 import { storage } from '../../firebase';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -19,6 +20,7 @@ export default function AdminDashboard() {
   const [formData, setFormData] = useState({
     productName: '',
     description: '',
+    purchaseLocation: '',
     costPrice: '',
     image: '',
     addDate: '',
@@ -133,6 +135,27 @@ export default function AdminDashboard() {
                   border: '1px solid #ccc',
                   borderRadius: 4,
                   resize: 'vertical'
+                }}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="purchaseLocation" style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>
+                ที่ตั้งซื้อ / แหล่งที่ซื้อ
+              </label>
+              <input
+                type="text"
+                id="purchaseLocation"
+                name="purchaseLocation"
+                value={formData.purchaseLocation}
+                onChange={handleChange}
+                placeholder="เช่น ร้าน A สาขา B หรือแหล่งที่มา"
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  fontSize: 16,
+                  border: '1px solid #ccc',
+                  borderRadius: 4
                 }}
               />
             </div>

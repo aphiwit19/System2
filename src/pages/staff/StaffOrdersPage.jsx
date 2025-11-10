@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
-import { getWithdrawalsByUser } from '../../server/products';
+import { getWithdrawalsByUser } from '../../services';
 
 const statuses = ['รอดำเนินการ', 'กำลังดำเนินการส่ง', 'ส่งสำเร็จ'];
 

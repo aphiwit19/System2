@@ -1,10 +1,6 @@
-import { collection, doc, getDocs, orderBy, query, updateDoc, getDoc as getDocRef } from 'firebase/firestore';
-import { db } from '../firebase';
+// Users service layer
+import { db, collection, getDocs, orderBy, query, updateDoc, doc, getDoc as getDocRef } from '../repositories/firestore';
 
-/**
- * ดึงข้อมูลผู้ใช้ทั้งหมด
- * @returns {Promise<Array>} - Array ของผู้ใช้ทั้งหมด
- */
 export async function getAllUsers() {
   try {
     const q = query(collection(db, 'users'), orderBy('email'));
@@ -16,12 +12,6 @@ export async function getAllUsers() {
   }
 }
 
-/**
- * อัพเดต role ของผู้ใช้
- * @param {string} userId - ID ของผู้ใช้
- * @param {string} role - role ใหม่ (admin, staff, customer)
- * @returns {Promise<void>}
- */
 export async function updateUserRole(userId, role) {
   try {
     await updateDoc(doc(db, 'users', userId), { role });
@@ -31,11 +21,6 @@ export async function updateUserRole(userId, role) {
   }
 }
 
-/**
- * ดึงข้อมูลผู้ใช้ตาม ID
- * @param {string} userId - ID ของผู้ใช้
- * @returns {Promise<Object>} - ข้อมูลผู้ใช้
- */
 export async function getUserById(userId) {
   try {
     const docRef = doc(db, 'users', userId);
@@ -49,4 +34,3 @@ export async function getUserById(userId) {
     throw error;
   }
 }
-

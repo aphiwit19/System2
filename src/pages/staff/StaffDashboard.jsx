@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
-import { getAllProducts } from "../../server/products";
+import { getAllProducts } from "../../services";
 import { Link } from "react-router-dom";
 
 export default function StaffDashboard() {
@@ -336,6 +336,11 @@ export default function StaffDashboard() {
                 >
                   {product.productName || "Unnamed Product"}
                 </h3>
+                {product.purchaseLocation && (
+                  <div style={{ fontSize: "12px", color: "#6b7280", marginBottom: "6px" }}>
+                    แหล่งที่ซื้อ: {product.purchaseLocation}
+                  </div>
+                )}
                 <p
                   title={product.description || "ไม่มีคำอธิบาย"}
                   style={{
@@ -468,6 +473,11 @@ export default function StaffDashboard() {
                   <h2 style={{ marginTop: 0 }}>
                     {detailProduct.productName || "Unnamed Product"}
                   </h2>
+                  {detailProduct.purchaseLocation && (
+                    <div style={{ fontSize: "13px", color: "#6b7280", margin: "4px 0 8px" }}>
+                      แหล่งที่ซื้อ: {detailProduct.purchaseLocation}
+                    </div>
+                  )}
                   <p style={{ color: "#666", whiteSpace: "pre-wrap" }}>
                     {detailProduct.description || "ไม่มีคำอธิบาย"}
                   </p>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getProductById, updateProduct } from '../../server/products';
+import { getProductById, updateProduct } from '../../services';
 import { Link } from 'react-router-dom';
 
 export default function EditProductPage() {
@@ -9,6 +9,7 @@ export default function EditProductPage() {
   const [formData, setFormData] = useState({
     productName: '',
     description: '',
+    purchaseLocation: '',
     costPrice: '',
     image: '',
     addDate: '',
@@ -29,6 +30,7 @@ export default function EditProductPage() {
         setFormData({
           productName: product.productName || '',
           description: product.description || '',
+          purchaseLocation: product.purchaseLocation || '',
           costPrice: product.costPrice || product.price || '',
           image: product.image || '',
           addDate: formattedDate,
@@ -163,6 +165,32 @@ export default function EditProductPage() {
                 transition: 'border-color 0.3s ease',
                 boxSizing: 'border-box',
                 fontFamily: 'inherit'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="purchaseLocation" style={{ display: 'block', marginBottom: 8, fontWeight: 'bold', fontSize: '14px' }}>
+              ที่ตั้งซื้อ / แหล่งที่ซื้อ
+            </label>
+            <input
+              type="text"
+              id="purchaseLocation"
+              name="purchaseLocation"
+              value={formData.purchaseLocation}
+              onChange={handleChange}
+              placeholder="เช่น ร้าน A สาขา B หรือแหล่งที่มา"
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                fontSize: 15,
+                border: '2px solid #e0e0e0',
+                borderRadius: 8,
+                outline: 'none',
+                transition: 'border-color 0.3s ease',
+                boxSizing: 'border-box'
               }}
               onFocus={(e) => e.target.style.borderColor = '#667eea'}
               onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}

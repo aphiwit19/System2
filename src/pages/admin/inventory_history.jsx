@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getAllProducts, getInventoryHistory } from '../../server/products';
+import { getAllProducts, getInventoryHistory } from '../../services';
 
 export default function InventoryHistoryIndex() {
   const [products, setProducts] = useState([]);

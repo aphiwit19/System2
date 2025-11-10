@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getProductById, getInventoryHistory } from '../../server/products';
+import { getProductById, getInventoryHistory } from '../../services';
 
 export default function InventoryHistoryPage() {
   const { id } = useParams();
